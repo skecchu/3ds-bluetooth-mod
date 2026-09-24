@@ -281,7 +281,7 @@
 
   <div class="titleblock">
     <div>
-      <div class="eyebrow">Wiring Reference · Rev C</div>
+      <div class="eyebrow">Wiring Reference · Rev D</div>
       <h1>3DS Bluetooth Power Gate</h1>
     </div>
     <div class="titlemeta">
@@ -291,16 +291,17 @@
       Logic: <b>Jack AND Hinge</b><br>
       Status: <b>built, audio fixed</b>
     </div>
-    <p class="dek">Gates power to the KCX_BT_EMITTER Bluetooth module so it only runs while the headphone jack is plugged in <i>and</i> the clamshell is open. Two cascaded load switches, no discrete transistors. Rev C adds the audio wiring that fixed static and muffled sound during the build.</p>
+    <p class="dek">Gates power to the KCX_BT_EMITTER Bluetooth module so it only runs while the headphone jack is plugged in <i>and</i> the clamshell is open. Two cascaded load switches, no discrete transistors. Rev C added the audio wiring that fixed static and muffled sound during the build. Rev D notes that the plug used to switch on Bluetooth must be metal.</p>
   </div>
 
   <div class="revnote">
-    <span class="revlabel">What changed in Rev C</span>
+    <span class="revlabel">What changed in Rev C and D</span>
     <ul>
-      <li><b>Module AGND goes to jack pin 4, not pin 1.</b> Pin 1 was listed as audio ground but gave static. Pin 4 (insert detect) sits at 0V whenever a plug is in, and using it made the static disappear.</li>
+      <li><b>Rev D: use a metal plug to turn on Bluetooth.</b> The jack only registers a plug when the plug's metal barrel bridges the detect contact (pin 4) to ground. A plastic dummy plug of the same size pushes the contacts into place but doesn't conduct, so the module stays off or loses its audio ground. Any metal 3.5mm plug works: a bare 3-pole TRS plug with no cable or a metal dust plug.</li>
+      <li><b>Module AGND goes to jack pin 4, not pin 1.</b> Pin 1 was listed as audio ground but gave static. Pin 4 (insert detect) sits at 0V whenever a metal plug is in, and using it made the static disappear.</li>
       <li><b>AGND and PGND on the module stay separate.</b> They were already separate when the static was present, so this is not the fix, but don't bridge them.</li>
       <li><b>The two stock inline caps on the module's L and R inputs are removed.</b> That cured the muffled sound.</li>
-      <li><b>Two new checks at the end</b> confirm the jack still switches the module and the uncapped inputs don't clip.</li>
+      <li><b>Three checks at the end</b> confirm the jack still switches the module, a metal plug turns it on, and the uncapped inputs don't clip.</li>
     </ul>
   </div>
 
@@ -445,7 +446,7 @@
           <circle cx="570" cy="90" r="4" fill="var(--signal)"/>
           <text x="570" y="72" font-family="var(--font-mono)" font-size="11" fill="var(--signal)" text-anchor="middle">TP49 / jack pin 4</text>
           <text x="570" y="55" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">jack detect</text>
-          <text x="580" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">plugged = 0V</text>
+          <text x="580" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">metal plug in = 0V</text>
           <circle cx="570" cy="200" r="3.5" fill="var(--signal)"/>
 
           <!-- same node also carries module AGND -->
@@ -523,7 +524,7 @@
             <line x1="380" y1="238" x2="380" y2="290"/>
           </g>
           <text x="388" y="286" font-family="var(--font-mono)" font-size="9.5" fill="var(--signal)">same node: R2 + NCP380L EN</text>
-          <text x="560" y="230" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">0V with a plug in</text>
+          <text x="560" y="230" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">0V with a metal plug in</text>
 
           <!-- KCX block -->
           <rect x="700" y="110" width="200" height="180" rx="3" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="1.5"/>
@@ -542,7 +543,7 @@
           <text x="800" y="274" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">AGND and PGND kept separate</text>
         </svg>
       </div>
-      <figcaption>Pin 4 acts as a clean ground reference while a plug is in because the detect switch pulls it to 0V. The module only runs while a plug is in, so that's the only time the reference matters.</figcaption>
+      <figcaption>Pin 4 acts as a clean ground reference while a metal plug is in, because the plug's barrel bridges the detect contact to ground and pulls it to 0V. The module only runs while a plug is in, so that's the only time the reference matters. A plastic plug doesn't conduct, so it leaves pin 4 floating.</figcaption>
     </figure>
     <p class="note">Why pin 1 caused static isn't confirmed yet. The likely reason is that it isn't a direct ground. It may reach ground through a ferrite bead or resistor, or it may be the headphone amp's sense or virtual-ground line. Either way, the module was measuring audio against a reference that moved. To confirm it, with the 3DS off and a plug in, measure resistance from pin 1 and pin 4 to board ground (pin 4 should read about 0Ω). Then, with the 3DS on and silent, measure DC volts from pin 1 to ground. A few ohms or any voltage on pin 1 means it isn't a true ground.</p>
   </section>
@@ -558,7 +559,7 @@
           <tr><td>Rail</td><td>NCP380H pin 5 (IN), via C1</td><td><span class="tag tag-power">power</span></td><td class="mono">already verified 3.3–3.7V</td></tr>
           <tr><td>TP126</td><td>NCP380H pin 4 (EN), direct</td><td><span class="tag tag-signal">signal</span></td><td class="mono">1.8V open / 0V closed, no bias resistor needed</td></tr>
           <tr><td>NCP380H OUT</td><td>NCP380L pin 5 (IN), via C2</td><td><span class="tag tag-power">power</span></td><td class="mono">also feeds R2's top</td></tr>
-          <tr><td>TP49 / jack pin 4</td><td>NCP380L pin 4 (EN), R2, module AGND</td><td><span class="tag tag-signal">signal</span> <span class="tag tag-audio">audio ref</span></td><td class="mono">0.783V unplugged / 0V plugged</td></tr>
+          <tr><td>TP49 / jack pin 4</td><td>NCP380L pin 4 (EN), R2, module AGND</td><td><span class="tag tag-signal">signal</span> <span class="tag tag-audio">audio ref</span></td><td class="mono">0.783V unplugged / 0V with metal plug (plastic plug does not pull it low)</td></tr>
           <tr><td>NCP380L OUT</td><td>BT module VIN, via C3</td><td><span class="tag tag-power">power</span></td><td class="mono">final switched output</td></tr>
           <tr><td>GND bus</td><td>both ICs, BT module PGND, board ground</td><td><span class="tag tag-gnd">ground</span></td><td class="mono">common reference; module AGND not on this bus</td></tr>
           <tr><td>Jack pin 2</td><td>BT module L in, direct</td><td><span class="tag tag-audio">audio</span></td><td class="mono">stock inline cap removed</td></tr>
@@ -584,6 +585,7 @@
       <li class="audio"><div class="step-body"><b>Prepare the module's audio input</b>Remove the two stock capacitors in series with the L and R inputs and bridge each footprint so the signal passes straight through. Leave AGND and PGND separate. Don't bridge them.</div></li>
       <li class="audio"><div class="step-body"><b>Wire the audio</b>Jack pin 2 → module L in. Jack pin 3 → module R in. Jack pin 4 → module AGND. Leave jack pin 1 unconnected. Keep these wires short, twisted together where you can, and away from the module's antenna.</div></li>
       <li class="check"><div class="step-body"><b>Check that the jack still switches the module</b>AGND now shares the TP49 node, so confirm it hasn't pinned that node low. Open the lid and unplug the jack: the module must power off, and TP49 must read <em>above 1.2V</em>. If the module stays on, move AGND to the jack's metal shell lug or a nearby board ground pad and listen for static again. Don't go back to pin 1.</div></li>
+      <li class="check"><div class="step-body"><b>Test with a metal plug</b>Plug a metal 3.5mm plug into the jack and open the lid. The module should power on, and TP49 should read <em>near 0V</em>. Use a metal plug for this and every later test. A plastic dummy plug won't switch the module on with this wiring.</div></li>
       <li class="check"><div class="step-body"><b>Check the uncapped inputs for DC offset and clipping</b>With the 3DS on and silent, measure DC from jack pin 2 and pin 3 to ground. You want <em>close to 0V, under about 50mV</em>. Then play something bass-heavy at max volume and listen for crunch. If either fails, fit 4.7–10µF caps in the L and R footprints instead of bridges. Larger caps block DC without muffling the sound the way the stock ones did.</div></li>
     </ol>
   </section>
@@ -596,14 +598,14 @@
           <tr><th>Clamshell</th><th>Jack</th><th>NCP380H</th><th>NCP380L</th><th>BT module</th></tr>
         </thead>
         <tbody>
-          <tr><td>Open</td><td>Plugged</td><td>ON</td><td>ON</td><td class="state-on">POWERED</td></tr>
+          <tr><td>Open</td><td>Metal plug in</td><td>ON</td><td>ON</td><td class="state-on">POWERED</td></tr>
           <tr><td>Open</td><td>Unplugged</td><td>ON</td><td>off</td><td class="state-off">off</td></tr>
-          <tr><td>Closed</td><td>Plugged</td><td>off</td><td>ON</td><td class="state-off">off</td></tr>
+          <tr><td>Closed</td><td>Metal plug in</td><td>off</td><td>ON</td><td class="state-off">off</td></tr>
           <tr><td>Closed</td><td>Unplugged</td><td>off</td><td>off</td><td class="state-off">off</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note">Closed + plugged still reads off because Switch 1 has no input power to pass to Switch 2, whatever the jack is doing. That's the point of nesting them in series. Re-run the Open + Unplugged row after wiring the audio (step 12).</p>
+    <p class="note">Closed + plugged still reads off because Switch 1 has no input power to pass to Switch 2, whatever the jack is doing. That's the point of nesting them in series. Re-run the Open + Unplugged row after wiring the audio (step 12). "Plugged" always means a metal plug. A plastic plug reads the same as unplugged.</p>
   </section>
 
   <section>
@@ -618,7 +620,8 @@
           <tr><td class="mono">U2</td><td>NCP380LSN05AAT1G</td><td>active-low load switch</td><td class="mono">TSOP-5</td></tr>
           <tr><td class="mono">R2</td><td>RMCF0805JT10K0</td><td>10kΩ, ±5%</td><td class="mono">0805</td></tr>
           <tr><td class="mono">C1–C3</td><td>C0805C105K4RACTU</td><td>1µF, X7R, 16V</td><td class="mono">0805</td></tr>
-          <tr><td class="mono">C4–C5</td><td class="muted">only if step 13 fails</td><td>4.7–10µF, X5R/X7R, ≥10V</td><td class="mono">0805</td></tr>
+          <tr><td class="mono">P1</td><td>Any metal 3.5mm plug</td><td>3-pole TRS, bare plug or metal dust plug. Required to turn on Bluetooth</td><td class="mono">3.5mm</td></tr>
+          <tr><td class="mono">C4–C5</td><td class="muted">only if step 14 fails</td><td>4.7–10µF, X5R/X7R, ≥10V</td><td class="mono">0805</td></tr>
         </tbody>
       </table>
     </div>
@@ -626,7 +629,7 @@
 
   <footer>
     <span>3DS Bluetooth Mod by <a href="https://www.reddit.com/user/skecchi_/" target="_blank" rel="noopener">u/skecchi_</a><br>IG: <a href="https://www.instagram.com/skecchu_/" target="_blank" rel="noopener">@skecchu_</a></span>
-    <span>Rev C · AGND moved to jack pin 4<br>Download: <a href="3DS-BT-Power-Gate-RevC.pdf">PDF</a> · <a href="3DS-BT-Power-Gate-RevC.png">PNG</a></span>
+    <span>Rev D · metal plug required<br>Download: <a href="3DS-BT-Power-Gate-RevD.pdf">PDF</a> · <a href="3DS-BT-Power-Gate-RevD.png">PNG</a></span>
   </footer>
 
 </div>

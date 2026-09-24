@@ -2,9 +2,9 @@
 
 A Bluetooth audio mod for the Nintendo 3DS XL (3DS LL) built around the KCX_BT_EMITTER module, with no extra holes cut in the shell for switches or buttons.
 
-**[View the wiring reference](https://skecchu.github.io/3ds-bluetooth-mod/)** · [PDF](3DS-BT-Power-Gate-RevC.pdf) · [PNG](3DS-BT-Power-Gate-RevC.png)
+**[View the wiring reference](https://skecchu.github.io/3ds-bluetooth-mod/)** · [PDF](3DS-BT-Power-Gate-RevD.pdf) · [PNG](3DS-BT-Power-Gate-RevD.png)
 
-![3DS Bluetooth power gate wiring reference](3DS-BT-Power-Gate-RevC.png)
+![3DS Bluetooth power gate wiring reference](3DS-BT-Power-Gate-RevD.png)
 
 ## What it does
 
@@ -12,7 +12,7 @@ The Bluetooth module only gets power when all three of these are true:
 
 - The 3DS is powered on.
 - The clamshell is open.
-- Headphones are plugged in.
+- Headphones or a metal 3.5mm plug are in the jack.
 
 So there's no power switch to add, and the module can't drain the battery while the 3DS is off or closed. Two load-switch ICs in series do the gating (NCP380H for the hinge, NCP380L for the headphone jack), which makes a hardware AND gate with no microcontroller.
 
@@ -28,6 +28,10 @@ Other changes in this build:
 
 The wiring reference has full steps, the node table, expected on/off states, a parts list, and the checks to run after wiring.
 
+## Turning on Bluetooth
+
+Plug a **metal** 3.5mm plug into the headphone jack (a bare 3-pole TRS plug or a metal dust plug) and open the lid. A plastic dummy plug won't work: the jack only registers a plug when the metal barrel bridges the detect contact to ground, and pin 4 doubles as the module's audio ground.
+
 ## Parts
 
 | Ref | Part | Value | Package |
@@ -36,6 +40,7 @@ The wiring reference has full steps, the node table, expected on/off states, a p
 | U2 | NCP380LSN05AAT1G | Active-low load switch | TSOP-5 |
 | R2 | RMCF0805JT10K0 | 10kΩ | 0805 |
 | C1 to C3 | C0805C105K4RACTU | 1µF, X7R, 16V | 0805 |
+| P1 | Any metal 3.5mm plug | 3-pole TRS, to turn on Bluetooth | 3.5mm |
 | Module | KCX_BT_EMITTER | Bluetooth 5.3 audio transmitter | |
 
 ## Disclaimer
