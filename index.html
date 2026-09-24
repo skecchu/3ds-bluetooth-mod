@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3DS Bluetooth Power Gate</title>
+<meta name="description" content="Wiring reference for a 3DS Bluetooth audio mod: hinge-and-jack power gate for the KCX_BT_EMITTER, plus audio wiring. By u/skecchi_.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#17395f;
+    --surface:#1f4a78;
+    --surface-2:#14324f;
+    --ink:#eef5ff;
+    --ink-dim:#a9c2dc;
+    --ink-faint:#7e9cbc;
+    --power:#ffcf6b;
+    --signal:#6fe0ff;
+    --audio:#d4b8ff;
+    --rule:rgba(238,245,255,0.16);
+    --grid:rgba(238,245,255,0.07);
+    --good:#7fd99a;
+    --bad:#ff9a8a;
+    --font-mono:'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --font-sans:'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme:dark;
+      --bg:#0a1420;
+      --surface:#101f30;
+      --surface-2:#0c1826;
+      --ink:#e7f0fb;
+      --ink-dim:#93a9c2;
+      --ink-faint:#5f7994;
+      --power:#ffcf6b;
+      --signal:#5ad1ff;
+      --audio:#c3a3ff;
+      --rule:rgba(231,240,251,0.14);
+      --grid:rgba(231,240,251,0.06);
+      --good:#7fd99a;
+      --bad:#ff9a8a;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0a1420;
+    --surface:#101f30;
+    --surface-2:#0c1826;
+    --ink:#e7f0fb;
+    --ink-dim:#93a9c2;
+    --ink-faint:#5f7994;
+    --power:#ffcf6b;
+    --signal:#5ad1ff;
+    --audio:#c3a3ff;
+    --rule:rgba(231,240,251,0.14);
+    --grid:rgba(231,240,251,0.06);
+    --good:#7fd99a;
+    --bad:#ff9a8a;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    line-height:1.55;
+  }
+  .page{
+    max-width:920px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  @media (max-width:600px){ .page{ padding:32px 16px 64px; } }
+
+  /* ---------- title block ---------- */
+  .titleblock{
+    border:1px solid var(--rule);
+    background:var(--surface);
+    border-radius:2px;
+    padding:20px 24px;
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:8px 24px;
+    align-items:end;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--signal);
+  }
+  h1{
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:clamp(24px,4vw,32px);
+    margin:4px 0 0;
+    text-wrap:balance;
+    letter-spacing:-0.01em;
+  }
+  .titlemeta{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-dim);
+    text-align:right;
+    line-height:1.8;
+  }
+  .titlemeta b{ color:var(--ink); font-weight:600; }
+  .dek{
+    grid-column:1 / -1;
+    margin:2px 0 0;
+    color:var(--ink-dim);
+    font-size:15px;
+    max-width:62ch;
+  }
+
+  section{ margin-top:40px; }
+  h2{
+    font-family:var(--font-mono);
+    font-size:13px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    border-bottom:1px solid var(--rule);
+    padding-bottom:8px;
+    margin:0 0 18px;
+  }
+  h2 span.num{ color:var(--signal); margin-right:8px; }
+
+  p{ color:var(--ink); max-width:66ch; }
+  p.note{ color:var(--ink-dim); font-size:14px; }
+
+  /* ---------- revision callout ---------- */
+  .revnote{
+    margin-top:20px;
+    border:1px solid color-mix(in srgb, var(--audio) 45%, transparent);
+    background:color-mix(in srgb, var(--audio) 9%, var(--surface-2));
+    border-radius:2px;
+    padding:14px 18px;
+    font-size:14.5px;
+    color:var(--ink-dim);
+  }
+  .revnote b{ color:var(--ink); font-weight:600; }
+  .revnote .revlabel{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--audio);
+    margin-bottom:4px;
+  }
+  .revnote ul{ margin:6px 0 0; padding-left:18px; display:grid; gap:4px; }
+
+  /* ---------- diagram ---------- */
+  figure{ margin:0; }
+  .diagram-frame{
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:8px;
+    overflow-x:auto;
+  }
+  .diagram-frame svg{ min-width:640px; }
+  svg{ display:block; width:100%; height:auto; }
+  figcaption{
+    margin-top:10px;
+    font-size:13px;
+    color:var(--ink-dim);
+  }
+  .legend{
+    display:flex; gap:20px; flex-wrap:wrap;
+    margin-top:14px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-dim);
+  }
+  .legend .sw{ display:inline-block; width:18px; height:2px; margin-right:6px; vertical-align:middle; }
+
+  /* ---------- tables ---------- */
+  .tablewrap{ overflow-x:auto; border:1px solid var(--rule); border-radius:2px; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; min-width:520px; }
+  th,td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--rule); vertical-align:top; }
+  th{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:var(--surface-2);
+    font-weight:500;
+  }
+  td{ color:var(--ink); }
+  tr:last-child td{ border-bottom:none; }
+  td.mono, th.mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  td.muted{ color:var(--ink-faint); }
+  .tag{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:10px;
+    padding:2px 6px;
+    border-radius:2px;
+    letter-spacing:0.04em;
+    white-space:nowrap;
+  }
+  .tag-power{ background:color-mix(in srgb, var(--power) 22%, transparent); color:var(--power); }
+  .tag-signal{ background:color-mix(in srgb, var(--signal) 22%, transparent); color:var(--signal); }
+  .tag-audio{ background:color-mix(in srgb, var(--audio) 22%, transparent); color:var(--audio); }
+  .tag-gnd{ background:var(--surface-2); color:var(--ink-dim); }
+  .tag-nc{ background:color-mix(in srgb, var(--bad) 18%, transparent); color:var(--bad); }
+
+  /* ---------- steps ---------- */
+  ol.steps{ list-style:none; margin:0; padding:0; counter-reset:step; }
+  ol.steps li{
+    counter-increment:step;
+    display:grid;
+    grid-template-columns:32px 1fr;
+    gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid var(--rule);
+  }
+  ol.steps li:last-child{ border-bottom:none; }
+  ol.steps li::before{
+    content:counter(step);
+    font-family:var(--font-mono);
+    font-weight:600;
+    font-size:13px;
+    color:var(--signal);
+    background:var(--surface-2);
+    border:1px solid var(--rule);
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  ol.steps li.audio::before{ color:var(--audio); }
+  ol.steps li.check::before{ color:var(--good); }
+  ol.steps .step-body{ color:var(--ink-dim); font-size:14.5px; }
+  ol.steps .step-body b{ display:block; color:var(--ink); font-weight:600; margin-bottom:2px; font-size:15px; }
+  ol.steps .step-body em{ font-style:normal; color:var(--ink); }
+
+  /* ---------- truth table ---------- */
+  .state-on{ color:var(--good); font-weight:600; }
+  .state-off{ color:var(--bad); font-weight:600; }
+
+  .titlemeta a, footer a{
+    color:inherit;
+    text-decoration:underline;
+    text-decoration-color:color-mix(in srgb, var(--signal) 60%, transparent);
+    text-underline-offset:2px;
+  }
+  .titlemeta a:hover, footer a:hover, .titlemeta a:focus-visible, footer a:focus-visible{ color:var(--signal); }
+  a:focus-visible{ outline:2px solid var(--signal); outline-offset:2px; }
+
+  footer span:last-child{ text-align:right; }
+  footer{
+    margin-top:56px;
+    padding-top:18px;
+    border-top:1px solid var(--rule);
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-faint);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:600px){
+    .titleblock{ grid-template-columns:1fr; }
+    .titlemeta{ text-align:left; }
+  }
+</style>
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="titleblock">
+    <div>
+      <div class="eyebrow">Wiring Reference · Rev C</div>
+      <h1>3DS Bluetooth Power Gate</h1>
+    </div>
+    <div class="titlemeta">
+      Mod by: <b><a href="https://www.reddit.com/user/skecchi_/" target="_blank" rel="noopener">u/skecchi_</a></b><br>
+      IG: <b><a href="https://www.instagram.com/skecchu_/" target="_blank" rel="noopener">@skecchu_</a></b><br>
+      Board: <b>3DS LL</b><br>
+      Logic: <b>Jack AND Hinge</b><br>
+      Status: <b>built, audio fixed</b>
+    </div>
+    <p class="dek">Gates power to the KCX_BT_EMITTER Bluetooth module so it only runs while the headphone jack is plugged in <i>and</i> the clamshell is open. Two cascaded load switches, no discrete transistors. Rev C adds the audio wiring that fixed static and muffled sound during the build.</p>
+  </div>
+
+  <div class="revnote">
+    <span class="revlabel">What changed in Rev C</span>
+    <ul>
+      <li><b>Module AGND goes to jack pin 4, not pin 1.</b> Pin 1 was listed as audio ground but gave static. Pin 4 (insert detect) sits at 0V whenever a plug is in, and using it made the static disappear.</li>
+      <li><b>AGND and PGND on the module stay separate.</b> They were already separate when the static was present, so this is not the fix, but don't bridge them.</li>
+      <li><b>The two stock inline caps on the module's L and R inputs are removed.</b> That cured the muffled sound.</li>
+      <li><b>Two new checks at the end</b> confirm the jack still switches the module and the uncapped inputs don't clip.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2><span class="num">01</span>Power circuit</h2>
+    <figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 960 600" role="img" aria-label="Power flows from the verified 3.3–3.7V rail through two series load switches, NCP380H then NCP380L, into the Bluetooth module. NCP380H's enable pin is driven by TP126, the hinge sensor. NCP380L's enable pin is driven by TP49, the jack detect line, pulled up by resistor R2 from the same node. Because the switches are in series, power reaches the module only when both are enabled.">
+
+          <g stroke="var(--grid)" stroke-width="1">
+            <path d="M0,520 H960" />
+          </g>
+
+          <!-- GND bus -->
+          <line x1="120" y1="520" x2="850" y2="520" stroke="var(--ink-faint)" stroke-width="2"/>
+          <g stroke="var(--ink-faint)" stroke-width="2">
+            <line x1="110" y1="520" x2="110" y2="536"/>
+            <line x1="98" y1="536" x2="122" y2="536"/>
+            <line x1="103" y1="542" x2="117" y2="542"/>
+            <line x1="107" y1="548" x2="113" y2="548"/>
+          </g>
+          <text x="130" y="538" font-family="var(--font-mono)" font-size="10.5" fill="var(--ink-faint)">GND: common with board ground (module PGND only)</text>
+
+          <!-- POWER PATH -->
+          <g stroke="var(--power)" stroke-width="2.5" fill="none">
+            <line x1="70" y1="300" x2="150" y2="300"/>
+            <line x1="150" y1="300" x2="230" y2="300"/>
+            <line x1="390" y1="300" x2="450" y2="300"/>
+            <line x1="450" y1="300" x2="470" y2="300"/>
+            <line x1="470" y1="300" x2="490" y2="300"/>
+            <line x1="650" y1="300" x2="710" y2="300"/>
+            <line x1="710" y1="300" x2="760" y2="300"/>
+          </g>
+          <circle cx="70" cy="300" r="5" fill="var(--power)"/>
+          <text x="70" y="278" font-family="var(--font-mono)" font-size="11" fill="var(--power)" text-anchor="middle">RAIL</text>
+          <text x="70" y="335" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)" text-anchor="middle">verified</text>
+          <text x="70" y="348" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)" text-anchor="middle">3.3–3.7V</text>
+
+          <circle cx="150" cy="300" r="3.5" fill="var(--power)"/>
+          <circle cx="450" cy="300" r="3.5" fill="var(--power)"/>
+          <circle cx="470" cy="300" r="3.5" fill="var(--power)"/>
+          <circle cx="710" cy="300" r="3.5" fill="var(--power)"/>
+
+          <!-- decoupling caps -->
+          <g stroke="var(--ink)" stroke-width="2">
+            <line x1="150" y1="300" x2="150" y2="520"/>
+            <line x1="135" y1="405" x2="165" y2="405"/>
+            <line x1="135" y1="417" x2="165" y2="417"/>
+          </g>
+          <text x="172" y="415" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">C1</text>
+          <text x="172" y="428" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)">1µF</text>
+
+          <g stroke="var(--ink)" stroke-width="2">
+            <line x1="450" y1="300" x2="450" y2="520"/>
+            <line x1="435" y1="405" x2="465" y2="405"/>
+            <line x1="435" y1="417" x2="465" y2="417"/>
+          </g>
+          <text x="472" y="415" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">C2</text>
+          <text x="472" y="428" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)">1µF</text>
+
+          <g stroke="var(--ink)" stroke-width="2">
+            <line x1="710" y1="300" x2="710" y2="520"/>
+            <line x1="695" y1="405" x2="725" y2="405"/>
+            <line x1="695" y1="417" x2="725" y2="417"/>
+          </g>
+          <text x="732" y="415" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">C3</text>
+          <text x="732" y="428" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)">1µF</text>
+
+          <!-- NCP380H -->
+          <rect x="230" y="260" width="160" height="80" rx="3" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="1.5"/>
+          <text x="310" y="294" font-family="var(--font-mono)" font-weight="600" font-size="13" fill="var(--ink)" text-anchor="middle">NCP380H</text>
+          <text x="310" y="310" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)" text-anchor="middle">hinge switch</text>
+          <text x="310" y="325" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">active-high EN</text>
+
+          <g stroke="var(--power)" stroke-width="2.5"><line x1="210" y1="300" x2="230" y2="300"/></g>
+          <text x="226" y="292" font-family="var(--font-mono)" font-size="10.5" fill="var(--power)" text-anchor="end">IN</text>
+          <text x="226" y="316" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)" text-anchor="end">pin 5</text>
+
+          <g stroke="var(--power)" stroke-width="2.5"><line x1="390" y1="300" x2="410" y2="300"/></g>
+          <text x="394" y="292" font-family="var(--font-mono)" font-size="10.5" fill="var(--power)">OUT</text>
+          <text x="394" y="316" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">pin 1</text>
+
+          <g stroke="var(--signal)" stroke-width="2.5"><line x1="310" y1="260" x2="310" y2="235"/></g>
+          <text x="316" y="230" font-family="var(--font-mono)" font-size="10.5" fill="var(--signal)">EN</text>
+          <text x="316" y="242" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">pin 4</text>
+
+          <g stroke="var(--ink-faint)" stroke-width="2"><line x1="310" y1="340" x2="310" y2="365"/></g>
+          <text x="316" y="362" font-family="var(--font-mono)" font-size="10.5" fill="var(--ink-faint)">GND</text>
+          <text x="316" y="374" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">pin 2</text>
+
+          <g stroke="var(--ink-faint)" stroke-width="1.5" stroke-dasharray="3,3"><line x1="368" y1="260" x2="368" y2="238"/></g>
+          <text x="374" y="243" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">FLAG (NC)</text>
+
+          <!-- NCP380L -->
+          <rect x="490" y="260" width="160" height="80" rx="3" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="1.5"/>
+          <text x="570" y="294" font-family="var(--font-mono)" font-weight="600" font-size="13" fill="var(--ink)" text-anchor="middle">NCP380L</text>
+          <text x="570" y="310" font-family="var(--font-mono)" font-size="10" fill="var(--ink-dim)" text-anchor="middle">jack switch</text>
+          <text x="570" y="325" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">active-low EN</text>
+
+          <g stroke="var(--power)" stroke-width="2.5"><line x1="470" y1="300" x2="490" y2="300"/></g>
+          <text x="487" y="292" font-family="var(--font-mono)" font-size="10.5" fill="var(--power)" text-anchor="end">IN</text>
+          <text x="487" y="316" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)" text-anchor="end">pin 5</text>
+
+          <g stroke="var(--power)" stroke-width="2.5"><line x1="650" y1="300" x2="670" y2="300"/></g>
+          <text x="654" y="292" font-family="var(--font-mono)" font-size="10.5" fill="var(--power)">OUT</text>
+          <text x="654" y="316" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">pin 1</text>
+
+          <g stroke="var(--signal)" stroke-width="2.5"><line x1="570" y1="260" x2="570" y2="235"/></g>
+          <text x="576" y="230" font-family="var(--font-mono)" font-size="10.5" fill="var(--signal)">EN</text>
+          <text x="576" y="242" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">pin 4</text>
+
+          <g stroke="var(--ink-faint)" stroke-width="2"><line x1="570" y1="340" x2="570" y2="365"/></g>
+          <text x="576" y="362" font-family="var(--font-mono)" font-size="10.5" fill="var(--ink-faint)">GND</text>
+          <text x="576" y="374" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">pin 2</text>
+
+          <g stroke="var(--ink-faint)" stroke-width="1.5" stroke-dasharray="3,3"><line x1="628" y1="260" x2="628" y2="238"/></g>
+          <text x="634" y="243" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">FLAG (NC)</text>
+
+          <!-- BT MODULE -->
+          <rect x="760" y="270" width="150" height="60" rx="3" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="1.5"/>
+          <text x="835" y="298" font-family="var(--font-mono)" font-weight="600" font-size="12.5" fill="var(--ink)" text-anchor="middle">KCX_BT_EMITTER</text>
+          <text x="835" y="314" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">~35–40mA</text>
+          <text x="746" y="292" font-family="var(--font-mono)" font-size="9.5" fill="var(--power)" text-anchor="end">VIN</text>
+          <g stroke="var(--ink-faint)" stroke-width="2"><line x1="835" y1="330" x2="835" y2="520"/></g>
+          <text x="841" y="362" font-family="var(--font-mono)" font-size="10.5" fill="var(--ink-faint)">PGND</text>
+          <circle cx="835" cy="520" r="3.5" fill="var(--ink-faint)"/>
+
+          <!-- TP126 -> EN(H) -->
+          <g stroke="var(--signal)" stroke-width="2" stroke-dasharray="5,4">
+            <line x1="310" y1="90" x2="310" y2="235"/>
+          </g>
+          <circle cx="310" cy="90" r="4" fill="var(--signal)"/>
+          <text x="310" y="72" font-family="var(--font-mono)" font-size="11" fill="var(--signal)" text-anchor="middle">TP126</text>
+          <text x="310" y="55" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">hinge GPIO</text>
+          <text x="320" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">open = 1.8V · closed = 0V</text>
+
+          <!-- TP49 + R2 -> EN(L) -->
+          <g stroke="var(--signal)" stroke-width="2" stroke-dasharray="5,4">
+            <line x1="570" y1="90" x2="570" y2="200"/>
+            <line x1="570" y1="200" x2="570" y2="235"/>
+          </g>
+          <circle cx="570" cy="90" r="4" fill="var(--signal)"/>
+          <text x="570" y="72" font-family="var(--font-mono)" font-size="11" fill="var(--signal)" text-anchor="middle">TP49 / jack pin 4</text>
+          <text x="570" y="55" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">jack detect</text>
+          <text x="580" y="112" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">plugged = 0V</text>
+          <circle cx="570" cy="200" r="3.5" fill="var(--signal)"/>
+
+          <!-- same node also carries module AGND -->
+          <g stroke="var(--audio)" stroke-width="2" stroke-dasharray="2,4">
+            <line x1="570" y1="150" x2="700" y2="150"/>
+          </g>
+          <circle cx="570" cy="150" r="3" fill="var(--audio)"/>
+          <text x="706" y="147" font-family="var(--font-mono)" font-size="9.5" fill="var(--audio)">also module AGND</text>
+          <text x="706" y="160" font-family="var(--font-mono)" font-size="9" fill="var(--ink-faint)">see Audio wiring</text>
+
+          <!-- R2 pull-up -->
+          <g stroke="var(--signal)" stroke-width="2" fill="none">
+            <line x1="570" y1="200" x2="470" y2="200"/>
+            <line x1="470" y1="200" x2="470" y2="220"/>
+            <line x1="470" y1="260" x2="470" y2="300"/>
+          </g>
+          <rect x="462" y="220" width="16" height="40" fill="var(--surface-2)" stroke="var(--signal)" stroke-width="1.8"/>
+          <text x="450" y="238" font-family="var(--font-mono)" font-size="10.5" fill="var(--signal)" text-anchor="end">R2</text>
+          <text x="450" y="251" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="end">10kΩ</text>
+
+        </svg>
+      </div>
+      <figcaption>Power reaches the Bluetooth module only when both series switches conduct. NCP380H closes when the clamshell is open (TP126), and NCP380L closes when the jack is plugged in (TP49). That's an AND in hardware with no logic gate.</figcaption>
+    </figure>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--power)"></span>power path</span>
+      <span><span class="sw" style="background-image:repeating-linear-gradient(to right, var(--signal) 0 4px, transparent 4px 7px);"></span>control signal</span>
+      <span><span class="sw" style="background:var(--audio)"></span>audio</span>
+      <span><span class="sw" style="background:var(--ink-faint)"></span>ground</span>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span>Audio wiring</h2>
+    <figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 960 330" role="img" aria-label="Headphone jack P3 to the KCX module's audio input. Pin 2, audio left, and pin 3, audio right, run directly to the module's L and R inputs with the stock inline capacitors removed. Pin 4, insert detect, goes to the module's AGND and is also the TP49 node that drives NCP380L. Pin 1 is not connected because it caused static. Inside the module, AGND and PGND are kept separate.">
+
+          <!-- Jack block -->
+          <rect x="60" y="40" width="200" height="250" rx="3" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="1.5"/>
+          <text x="160" y="28" font-family="var(--font-mono)" font-weight="600" font-size="12.5" fill="var(--ink)" text-anchor="middle">HEADPHONE JACK P3</text>
+
+          <text x="80" y="84" font-family="var(--font-mono)" font-size="11" fill="var(--ink-faint)">pin 1</text>
+          <text x="80" y="98" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-faint)">listed audio GND</text>
+          <text x="80" y="134" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">pin 2</text>
+          <text x="80" y="148" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)">audio left</text>
+          <text x="80" y="184" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">pin 3</text>
+          <text x="80" y="198" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)">audio right</text>
+          <text x="80" y="234" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">pin 4</text>
+          <text x="80" y="248" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)">insert detect (TP49)</text>
+
+          <!-- pin 1: not connected -->
+          <line x1="260" y1="88" x2="300" y2="88" stroke="var(--ink-faint)" stroke-width="2"/>
+          <g stroke="var(--bad)" stroke-width="2.2">
+            <line x1="300" y1="80" x2="316" y2="96"/>
+            <line x1="316" y1="80" x2="300" y2="96"/>
+          </g>
+          <text x="328" y="86" font-family="var(--font-mono)" font-size="10.5" fill="var(--bad)">not connected</text>
+          <text x="328" y="100" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-faint)">used as AGND in Rev B: gave static</text>
+
+          <!-- L and R -->
+          <g stroke="var(--audio)" stroke-width="2.5">
+            <line x1="260" y1="138" x2="700" y2="138"/>
+            <line x1="260" y1="188" x2="700" y2="188"/>
+          </g>
+          <text x="480" y="130" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">direct: stock inline cap removed, pads bridged</text>
+          <text x="480" y="180" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">direct: stock inline cap removed, pads bridged</text>
+
+          <!-- pin 4 to AGND, with tap to NCP380L EN node -->
+          <g stroke="var(--audio)" stroke-width="2.5">
+            <line x1="260" y1="238" x2="700" y2="238"/>
+          </g>
+          <circle cx="380" cy="238" r="3.5" fill="var(--signal)"/>
+          <g stroke="var(--signal)" stroke-width="2" stroke-dasharray="5,4">
+            <line x1="380" y1="238" x2="380" y2="290"/>
+          </g>
+          <text x="388" y="286" font-family="var(--font-mono)" font-size="9.5" fill="var(--signal)">same node: R2 + NCP380L EN</text>
+          <text x="560" y="230" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">0V with a plug in</text>
+
+          <!-- KCX block -->
+          <rect x="700" y="110" width="200" height="180" rx="3" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="1.5"/>
+          <text x="800" y="98" font-family="var(--font-mono)" font-weight="600" font-size="12.5" fill="var(--ink)" text-anchor="middle">KCX_BT_EMITTER</text>
+          <text x="714" y="142" font-family="var(--font-mono)" font-size="11" fill="var(--audio)">L in</text>
+          <text x="714" y="192" font-family="var(--font-mono)" font-size="11" fill="var(--audio)">R in</text>
+          <text x="714" y="242" font-family="var(--font-mono)" font-size="11" fill="var(--audio)">AGND</text>
+
+          <!-- AGND / PGND separation -->
+          <line x1="790" y1="238" x2="826" y2="238" stroke="var(--ink-faint)" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <g stroke="var(--bad)" stroke-width="2">
+            <line x1="802" y1="231" x2="814" y2="245"/>
+            <line x1="814" y1="231" x2="802" y2="245"/>
+          </g>
+          <text x="832" y="242" font-family="var(--font-mono)" font-size="11" fill="var(--ink-faint)">PGND</text>
+          <text x="800" y="274" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-dim)" text-anchor="middle">AGND and PGND kept separate</text>
+        </svg>
+      </div>
+      <figcaption>Pin 4 acts as a clean ground reference while a plug is in because the detect switch pulls it to 0V. The module only runs while a plug is in, so that's the only time the reference matters.</figcaption>
+    </figure>
+    <p class="note">Why pin 1 caused static isn't confirmed yet. The likely reason is that it isn't a direct ground. It may reach ground through a ferrite bead or resistor, or it may be the headphone amp's sense or virtual-ground line. Either way, the module was measuring audio against a reference that moved. To confirm it, with the 3DS off and a plug in, measure resistance from pin 1 and pin 4 to board ground (pin 4 should read about 0Ω). Then, with the 3DS on and silent, measure DC volts from pin 1 to ground. A few ohms or any voltage on pin 1 means it isn't a true ground.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span>Node reference</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Node</th><th>Connects to</th><th>Carries</th><th class="mono">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Rail</td><td>NCP380H pin 5 (IN), via C1</td><td><span class="tag tag-power">power</span></td><td class="mono">already verified 3.3–3.7V</td></tr>
+          <tr><td>TP126</td><td>NCP380H pin 4 (EN), direct</td><td><span class="tag tag-signal">signal</span></td><td class="mono">1.8V open / 0V closed, no bias resistor needed</td></tr>
+          <tr><td>NCP380H OUT</td><td>NCP380L pin 5 (IN), via C2</td><td><span class="tag tag-power">power</span></td><td class="mono">also feeds R2's top</td></tr>
+          <tr><td>TP49 / jack pin 4</td><td>NCP380L pin 4 (EN), R2, module AGND</td><td><span class="tag tag-signal">signal</span> <span class="tag tag-audio">audio ref</span></td><td class="mono">0.783V unplugged / 0V plugged</td></tr>
+          <tr><td>NCP380L OUT</td><td>BT module VIN, via C3</td><td><span class="tag tag-power">power</span></td><td class="mono">final switched output</td></tr>
+          <tr><td>GND bus</td><td>both ICs, BT module PGND, board ground</td><td><span class="tag tag-gnd">ground</span></td><td class="mono">common reference; module AGND not on this bus</td></tr>
+          <tr><td>Jack pin 2</td><td>BT module L in, direct</td><td><span class="tag tag-audio">audio</span></td><td class="mono">stock inline cap removed</td></tr>
+          <tr><td>Jack pin 3</td><td>BT module R in, direct</td><td><span class="tag tag-audio">audio</span></td><td class="mono">stock inline cap removed</td></tr>
+          <tr><td>Jack pin 1</td><td class="muted">nothing</td><td><span class="tag tag-nc">not connected</span></td><td class="mono">caused static as AGND</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span>Assembly order</h2>
+    <ol class="steps">
+      <li><div class="step-body"><b>Both control signals confirmed</b>TP126 measured 1.8V open / 0V closed, cleanly above and below the NCP380 EN thresholds (1.2V min high, 0.4V max low), so no bias resistor is needed on that leg. TP49 measured 0.783V unplugged / 0V plugged. The unplugged reading falls between the two thresholds, which is why R2's pull-up is still required there.</div></li>
+      <li><div class="step-body"><b>Place the decoupling caps</b>Tack C1, C2, and C3 near where each will sit (IN of NCP380H, IN of NCP380L, and VIN of the BT module) before running the rest of the wiring.</div></li>
+      <li><div class="step-body"><b>Mount both switch ICs</b>NCP380H and NCP380L on a small scrap of perfboard or dead-bug style, leads accessible for hand wiring.</div></li>
+      <li><div class="step-body"><b>Wire the ground bus first</b>Tie NCP380H GND, NCP380L GND, BT module PGND, and board ground together. Ground is the reference every other measurement depends on.</div></li>
+      <li><div class="step-body"><b>Wire the power path</b>Rail → C1 → NCP380H IN → NCP380H OUT → C2 → R2 top-tap → NCP380L IN → NCP380L OUT → C3 → BT module VIN.</div></li>
+      <li><div class="step-body"><b>Wire EN(H)</b>TP126 straight to NCP380H pin 4. No extra resistor needed, since its swing is clean on both ends.</div></li>
+      <li><div class="step-body"><b>Wire EN(L)</b>TP49, the R2 pull-up, and NCP380L pin 4 all land on the same node.</div></li>
+      <li><div class="step-body"><b>Power up without the BT module attached</b>Confirm NCP380L OUT reads correctly across all four open/closed × plugged/unplugged combinations (table below) before anything downstream is at risk.</div></li>
+      <li><div class="step-body"><b>Connect the BT module's power</b>VIN and PGND only, once the switching logic checks out clean on its own.</div></li>
+      <li class="audio"><div class="step-body"><b>Prepare the module's audio input</b>Remove the two stock capacitors in series with the L and R inputs and bridge each footprint so the signal passes straight through. Leave AGND and PGND separate. Don't bridge them.</div></li>
+      <li class="audio"><div class="step-body"><b>Wire the audio</b>Jack pin 2 → module L in. Jack pin 3 → module R in. Jack pin 4 → module AGND. Leave jack pin 1 unconnected. Keep these wires short, twisted together where you can, and away from the module's antenna.</div></li>
+      <li class="check"><div class="step-body"><b>Check that the jack still switches the module</b>AGND now shares the TP49 node, so confirm it hasn't pinned that node low. Open the lid and unplug the jack: the module must power off, and TP49 must read <em>above 1.2V</em>. If the module stays on, move AGND to the jack's metal shell lug or a nearby board ground pad and listen for static again. Don't go back to pin 1.</div></li>
+      <li class="check"><div class="step-body"><b>Check the uncapped inputs for DC offset and clipping</b>With the 3DS on and silent, measure DC from jack pin 2 and pin 3 to ground. You want <em>close to 0V, under about 50mV</em>. Then play something bass-heavy at max volume and listen for crunch. If either fails, fit 4.7–10µF caps in the L and R footprints instead of bridges. Larger caps block DC without muffling the sound the way the stock ones did.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span>Expected states</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Clamshell</th><th>Jack</th><th>NCP380H</th><th>NCP380L</th><th>BT module</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Open</td><td>Plugged</td><td>ON</td><td>ON</td><td class="state-on">POWERED</td></tr>
+          <tr><td>Open</td><td>Unplugged</td><td>ON</td><td>off</td><td class="state-off">off</td></tr>
+          <tr><td>Closed</td><td>Plugged</td><td>off</td><td>ON</td><td class="state-off">off</td></tr>
+          <tr><td>Closed</td><td>Unplugged</td><td>off</td><td>off</td><td class="state-off">off</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Closed + plugged still reads off because Switch 1 has no input power to pass to Switch 2, whatever the jack is doing. That's the point of nesting them in series. Re-run the Open + Unplugged row after wiring the audio (step 12).</p>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span>Bill of materials</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Ref</th><th>Part</th><th>Value</th><th>Package</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">U1</td><td>NCP380HSN05AAT1G</td><td>active-high load switch</td><td class="mono">TSOP-5</td></tr>
+          <tr><td class="mono">U2</td><td>NCP380LSN05AAT1G</td><td>active-low load switch</td><td class="mono">TSOP-5</td></tr>
+          <tr><td class="mono">R2</td><td>RMCF0805JT10K0</td><td>10kΩ, ±5%</td><td class="mono">0805</td></tr>
+          <tr><td class="mono">C1–C3</td><td>C0805C105K4RACTU</td><td>1µF, X7R, 16V</td><td class="mono">0805</td></tr>
+          <tr><td class="mono">C4–C5</td><td class="muted">only if step 13 fails</td><td>4.7–10µF, X5R/X7R, ≥10V</td><td class="mono">0805</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>3DS Bluetooth Mod by <a href="https://www.reddit.com/user/skecchi_/" target="_blank" rel="noopener">u/skecchi_</a><br>IG: <a href="https://www.instagram.com/skecchu_/" target="_blank" rel="noopener">@skecchu_</a></span>
+    <span>Rev C · AGND moved to jack pin 4<br>Download: <a href="3DS-BT-Power-Gate-RevC.pdf">PDF</a> · <a href="3DS-BT-Power-Gate-RevC.png">PNG</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
